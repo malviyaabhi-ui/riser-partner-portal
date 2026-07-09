@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSessionContext, getVisibleProductsWithPricing, fmtAED } from "@/lib/queries";
+import DatasheetButton from "@/components/DatasheetButton";
 
 export default async function ProductDetail({ params }) {
   const { supabase, partner } = await getSessionContext();
@@ -57,8 +58,9 @@ export default async function ProductDetail({ params }) {
         </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 flex-wrap">
         <Link href="/portal/quotes" className="btn btn-teal">Quote this product</Link>
+        {p.datasheet_path && <DatasheetButton path={p.datasheet_path} name={p.name} />}
         {p.website_url && (
           <a href={p.website_url} target="_blank" className="btn btn-ghost">Product website ↗</a>
         )}
