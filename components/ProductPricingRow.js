@@ -41,8 +41,11 @@ export default function ProductPricingRow({ product, bands }) {
   return (
     <div className={`flex items-center gap-4 px-4 py-3.5 ${!product.visible ? "opacity-55 bg-page/60" : ""}`}>
       <div className="flex-1 min-w-0">
-        <div className="font-display font-bold text-[14px]">{product.name}</div>
-        <div className="text-[11.5px] text-faint">{product.category} · {product.unit}</div>
+        <a href={`/admin/products/${product.id}`}
+          className="font-display font-bold text-[14px] hover:text-teal-dark hover:underline">
+          {product.name}
+        </a>
+        <div className="text-[11.5px] text-faint">{product.category} · {product.unit} · <a href={`/admin/products/${product.id}`} className="text-teal-dark">edit info</a></div>
       </div>
 
       <div className="w-28">

@@ -25,9 +25,11 @@ export default async function Products() {
         {products.map((p) => (
           <div key={p.id} className="card overflow-hidden flex flex-col hover:border-teal/50 transition">
             <div className="p-4 flex-1">
-              <div className="font-display font-bold text-[15px]">{p.name}</div>
+              <a href={`/portal/products/${p.id}`}
+                className="font-display font-bold text-[15px] hover:text-teal-dark hover:underline">{p.name}</a>
               <div className="text-[11.5px] text-faint mt-0.5">{p.category} · {p.unit}</div>
               <p className="text-[12.5px] text-muted leading-relaxed mt-2.5">{p.description}</p>
+              <a href={`/portal/products/${p.id}`} className="inline-block mt-2.5 text-[12px] font-semibold text-teal-dark">View details →</a>
             </div>
             <div className="grid grid-cols-3 gap-2 border-t border-line bg-page/60 px-4 py-3">
               <div>
