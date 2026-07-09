@@ -6,7 +6,23 @@ import { createClient } from "@/lib/supabase/client";
 export default function QuoteBuilder({ products, partnerId }) {
   const supabase = createClient();
   const router = useRouter();
-  const priced = products.filter((p) => p.buy != null);
+  // flatten: every visible variant is a sellable option; products without variants sell as themselves
+  const options = products.flatMap((p) =>
+    p.variants?.length
+      ? p.variants.filter((v) => v.buy != null).map((v) => ({
+          key: v.id, variant_id: v.id, product_id: p.id,
+          label: `${p.name} — ${v.name}`, unit: v.unit,
+          msrp: Number(v.msrp_aed), buy: v.buy,
+          discount: p.discount, floor: p.floor
+        }))
+      : p.buy != null ? [{
+          key: p.id, variant_id: null, product_id: p.id,
+          label: p.name, unit: p.unit,
+          msrp: Number(p.msrp_aed), buy: p.buy,
+          discount: p.discount, floor: p.floor
+        }] : []
+  );
+
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState("");
   const [email, setEmail] = useState("");
@@ -15,20 +31,20 @@ export default function QuoteBuilder({ products, partnerId }) {
   const [busy, setBusy] = useState(false);
 
   function addItem() {
-    if (!priced.length) return;
-    const p = priced[0];
-    setItems([...items, { product_id: p.id, qty: 1, unit_sell: Number(p.msrp_aed) }]);
+    if (!options.length) return;
+    const o = options[0];
+    setItems([...items, { key: o.key, qty: 1, unit_sell: o.msrp }]);
   }
-  function setItem(i, patch) {
+  const opt = (key) => options.find((o) => o.key === key);
+  const setItem = (i, patch) =>
     setItems(items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
-  }
-  const prod = (id) => priced.find((p) => p.id === id);
+
   const totalSell = items.reduce((s, it) => s + it.qty * it.unit_sell, 0);
-  const totalBuy = items.reduce((s, it) => s + it.qty * (prod(it.product_id)?.buy || 0), 0);
+  const totalBuy = items.reduce((s, it) => s + it.qty * (opt(it.key)?.buy || 0), 0);
   const belowFloor = items.some((it) => {
-    const p = prod(it.product_id);
-    if (!p) return false;
-    const floorPrice = p.msrp_aed * (1 - (Number(p.discount) + Number(p.floor)) / 100);
+    const o = opt(it.key);
+    if (!o) return false;
+    const floorPrice = o.msrp * (1 - (Number(o.discount) + Number(o.floor)) / 100);
     return it.unit_sell < floorPrice - 0.01;
   });
 
@@ -43,10 +59,13 @@ export default function QuoteBuilder({ products, partnerId }) {
       needs_approval: belowFloor, created_by: user.id
     }).select().single();
     if (error) { setMsg(error.message); setBusy(false); return; }
-    const rows = items.map((it) => ({
-      quote_id: q.id, product_id: it.product_id, qty: it.qty,
-      unit_buy: prod(it.product_id)?.buy || 0, unit_sell: it.unit_sell
-    }));
+    const rows = items.map((it) => {
+      const o = opt(it.key);
+      return {
+        quote_id: q.id, product_id: o.product_id, variant_id: o.variant_id,
+        description: o.label, qty: it.qty, unit_buy: o.buy, unit_sell: it.unit_sell
+      };
+    });
     const { error: e2 } = await supabase.from("quote_items").insert(rows);
     if (e2) { setMsg(e2.message); setBusy(false); return; }
     setOpen(false); setItems([]); setCustomer(""); setEmail(""); setBusy(false);
@@ -66,28 +85,29 @@ export default function QuoteBuilder({ products, partnerId }) {
       </div>
 
       {items.map((it, i) => {
-        const p = prod(it.product_id);
+        const o = opt(it.key);
         return (
           <div key={i} className="flex items-center gap-3 mb-2.5 flex-wrap">
-            <select className="input !w-52" value={it.product_id}
+            <select className="input !w-72" value={it.key}
               onChange={(e) => {
-                const np = prod(e.target.value);
-                setItem(i, { product_id: e.target.value, unit_sell: Number(np.msrp_aed) });
+                const no = opt(e.target.value);
+                setItem(i, { key: e.target.value, unit_sell: no.msrp });
               }}>
-              {priced.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+              {options.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
             </select>
             <input className="input !w-20" type="number" min="1" value={it.qty}
               onChange={(e) => setItem(i, { qty: Number(e.target.value) })} />
-            <div className="text-[12px] text-faint font-mono">buy {Math.round(p?.buy)}</div>
+            <div className="text-[12px] text-faint font-mono">buy {Math.round(o?.buy)}</div>
             <input className="input !w-28 font-mono" type="number" value={it.unit_sell}
               onChange={(e) => setItem(i, { unit_sell: Number(e.target.value) })} />
+            <span className="text-[11px] text-faint">{o?.unit}</span>
             <button className="text-bad text-[12px]" onClick={() => setItems(items.filter((_, x) => x !== i))}>Remove</button>
           </div>
         );
       })}
-      <button className="btn btn-ghost !py-1.5 !px-3 !text-[12px]" onClick={addItem}>+ Add product</button>
+      <button className="btn btn-ghost !py-1.5 !px-3 !text-[12px]" onClick={addItem}>+ Add item</button>
 
-      <div className="flex items-center gap-6 mt-4 pt-4 border-t border-line text-[13px]">
+      <div className="flex items-center gap-6 mt-4 pt-4 border-t border-line text-[13px] flex-wrap">
         <div>Total: <b className="font-mono">AED {totalSell.toLocaleString()}</b></div>
         <div>Your margin: <b className="font-mono text-good">AED {Math.round(totalSell - totalBuy).toLocaleString()}</b></div>
         {belowFloor && <span className="pill pill-amber">Below floor — needs Riser approval</span>}

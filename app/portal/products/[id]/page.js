@@ -18,24 +18,63 @@ export default async function ProductDetail({ params }) {
         <p className="text-[11.5px] text-faint mt-1">{p.category} · {p.unit}</p>
       </div>
 
-      <div className="card grid grid-cols-3 gap-2 px-5 py-4 my-5">
-        <div>
-          <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">MSRP</div>
-          <div className="font-mono text-[15px] text-faint line-through mt-1">{fmtAED(p.msrp_aed)}</div>
+      {p.variants?.length > 0 ? (
+        <div className="card overflow-hidden my-5">
+          <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
+            <h2 className="font-display font-bold text-[14px]">Editions &amp; pricing</h2>
+            <span className="text-[11.5px] text-faint">
+              Your discount: <b className="text-good font-mono">{p.discount != null && !paused ? `${p.discount}%` : "—"}</b>
+            </span>
+          </div>
+          <table className="w-full">
+            <thead><tr>
+              <th className="th">Variant</th><th className="th">Billing</th>
+              <th className="th text-right">MSRP</th><th className="th text-right">Your price</th>
+              <th className="th">Availability</th>
+            </tr></thead>
+            <tbody>
+              {p.variants.map((v) => (
+                <tr key={v.id}>
+                  <td className="td">
+                    <b>{v.name}</b>
+                    <div className="text-[11.5px] text-faint">{v.unit}{v.amc_pct ? ` · AMC ${v.amc_pct}%/yr` : ""}</div>
+                    {v.note && <div className="text-[11.5px] text-teal-dark mt-0.5">{v.note}</div>}
+                  </td>
+                  <td className="td capitalize text-muted">{v.billing.replace("_", "-")}</td>
+                  <td className="td font-mono text-right text-faint line-through">{fmtAED(v.msrp_aed)}</td>
+                  <td className="td font-mono text-right font-semibold">
+                    {v.buy != null && !paused ? fmtAED(v.buy) : "—"}
+                  </td>
+                  <td className="td">
+                    {v.availability === "in_stock" && <span className="pill pill-green">In stock</span>}
+                    {v.availability === "on_order" && <span className="pill pill-amber">On order</span>}
+                    {v.availability === "n_a" && <span className="text-faint text-[12px]">—</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your price</div>
-          <div className="font-mono text-[17px] font-semibold mt-1">
-            {p.buy != null && !paused ? fmtAED(p.buy) : "—"}
+      ) : (
+        <div className="card grid grid-cols-3 gap-2 px-5 py-4 my-5">
+          <div>
+            <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">MSRP</div>
+            <div className="font-mono text-[15px] text-faint line-through mt-1">{fmtAED(p.msrp_aed)}</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your price</div>
+            <div className="font-mono text-[17px] font-semibold mt-1">
+              {p.buy != null && !paused ? fmtAED(p.buy) : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your margin</div>
+            <div className="font-mono text-[17px] font-semibold text-good mt-1">
+              {p.discount != null && !paused ? `${p.discount}%` : "—"}
+            </div>
           </div>
         </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your margin</div>
-          <div className="font-mono text-[17px] font-semibold text-good mt-1">
-            {p.discount != null && !paused ? `${p.discount}%` : "—"}
-          </div>
-        </div>
-      </div>
+      )}
 
       {Array.isArray(p.highlights) && p.highlights.length > 0 && (
         <div className="card p-5 mb-5">

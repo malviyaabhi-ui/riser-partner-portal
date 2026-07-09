@@ -39,7 +39,9 @@ export default async function Products() {
               <div>
                 <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your price</div>
                 <div className="font-mono text-[14px] font-semibold mt-1">
-                  {p.buy != null && !paused ? fmtAED(p.buy) : "—"}
+                  {p.fromBuy != null && !paused
+                    ? `${p.variants?.length > 1 ? "from " : ""}${fmtAED(p.fromBuy)}`
+                    : "—"}
                 </div>
               </div>
               <div>

@@ -1,10 +1,13 @@
 import { getSessionContext } from "@/lib/queries";
 import ProductEditor from "@/components/ProductEditor";
+import VariantsEditor from "@/components/VariantsEditor";
 
 export default async function EditProduct({ params }) {
   const { supabase } = await getSessionContext();
-  const { data: product } = await supabase
-    .from("products").select("*").eq("id", params.id).single();
+  const [{ data: product }, { data: variants }] = await Promise.all([
+    supabase.from("products").select("*").eq("id", params.id).single(),
+    supabase.from("product_variants").select("*").eq("product_id", params.id).order("sort_order")
+  ]);
   if (!product) return <p className="text-muted">Product not found.</p>;
 
   return (
@@ -17,6 +20,7 @@ export default async function EditProduct({ params }) {
         </p>
       </div>
       <ProductEditor product={product} />
+      <VariantsEditor productId={product.id} variants={variants || []} />
     </div>
   );
 }
