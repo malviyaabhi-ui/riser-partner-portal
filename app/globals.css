@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+body { @apply bg-page text-ink font-body text-sm antialiased; }
+
+.card { @apply bg-white border border-line rounded-xl; }
+.btn { @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition; }
+.btn-teal { @apply bg-teal text-white hover:bg-teal-dark; }
+.btn-navy { @apply bg-navy text-white hover:bg-navy-3; }
+.btn-ghost { @apply bg-white border border-line hover:border-teal; }
+.pill { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold; }
+.pill-green { @apply bg-good/10 text-good; }
+.pill-amber { @apply bg-warn/10 text-warn; }
+.pill-red   { @apply bg-bad/10 text-bad; }
+.pill-navy  { @apply bg-navy/10 text-navy; }
+.pill-teal  { @apply bg-teal/10 text-teal-dark; }
+.pill-gold  { @apply bg-champagne/20 text-[#8F6F35]; }
+.th { @apply text-[11px] uppercase tracking-wider text-faint text-left px-4 py-2.5 border-b border-line font-semibold; }
+.td { @apply px-4 py-3 border-b border-line text-[13px] align-middle; }
+.stat-label { @apply text-[11.5px] uppercase tracking-wider text-faint font-semibold; }
+.stat-value { @apply font-mono text-2xl font-semibold mt-2; }
+.input { @apply w-full rounded-lg border border-line px-3 py-2 text-[13px] focus:outline-none focus:border-teal bg-white; }
+.field-label { @apply block text-[11px] uppercase tracking-wider text-faint font-semibold mb-1.5; }
