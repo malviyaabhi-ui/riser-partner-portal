@@ -43,6 +43,14 @@ Deno.serve(async (req) => {
     const isAdmin = ["riser_admin", "riser_staff"].includes(profile?.role);
 
     const priceLines = (products ?? []).map((p: any) => {
+      if (isAdmin) {
+        // Admin sees every tier band + visibility for each product
+        const bands = (tiers ?? [])
+          .filter((t: any) => t.product_id === p.id)
+          .map((t: any) => `${t.tier} −${t.discount_pct}% (floor +${t.floor_discount_pct}%)`)
+          .join(", ");
+        return `- ${p.name} (${p.unit}): MSRP AED ${p.msrp_aed}, ${p.visible ? "VISIBLE to partners" : "HIDDEN from partners"}. Tiers: ${bands || "none set"}`;
+      }
       const band = (tiers ?? []).find((t: any) =>
         t.product_id === p.id && t.tier === partner?.tier);
       const buy = band ? (p.msrp_aed * (1 - band.discount_pct / 100)).toFixed(0) : "n/a";
@@ -52,7 +60,10 @@ Deno.serve(async (req) => {
 
     const system = `You are Mira, the AI assistant inside the Riser Technologies Partner Portal.
 You help ${isAdmin ? "the Riser admin team" : "channel partners"} with pricing, quotes, KYC documents, products, and how the portal works.
-Be concise, friendly and practical. Use AED. Never invent prices — only use the data below. If something isn't in the data, say so and suggest raising a ticket.
+Be concise, friendly and practical. Keep formatting light — short prose, minimal headers and emoji. Use AED. Never invent prices — only use the data below.
+${isAdmin
+  ? "This user IS the Riser team (super admin). Never suggest raising a ticket or contacting Riser — instead point them to the right Admin Console page (Partners, Applications & KYC, Products & Pricing, Quote Approvals, Tickets) or the action to take there."
+  : "If something isn't in the data, say so and suggest raising a ticket to the Riser team."}
 
 USER: ${profile?.full_name ?? user.email} (${profile?.role})
 ${partner ? `PARTNER: ${partner.legal_name} — ${partner.type}, ${partner.tier} tier, status ${partner.status}, country ${partner.country}` : "PARTNER: none (Riser staff)"}
