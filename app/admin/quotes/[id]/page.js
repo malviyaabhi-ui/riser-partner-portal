@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSessionContext, fmtAED } from "@/lib/queries";
 import { QUOTE_PILL, QUOTE_LABEL } from "@/lib/quoteStatus";
 import QuoteActions from "@/components/QuoteActions";
+import QuoteStepper from "@/components/QuoteStepper";
 
 export default async function AdminQuoteDetail({ params }) {
   const { supabase } = await getSessionContext();
@@ -27,6 +28,8 @@ export default async function AdminQuoteDetail({ params }) {
         <QuoteActions quote={q} surface="admin" />
       </div>
 
+      <QuoteStepper quote={q} />
+
       <div className="card overflow-hidden">
         <table className="w-full">
           <thead><tr>
@@ -37,7 +40,10 @@ export default async function AdminQuoteDetail({ params }) {
           <tbody>
             {(q.quote_items || []).map((it) => (
               <tr key={it.id}>
-                <td className="td"><b>{it.description || it.products?.name}</b></td>
+                <td className="td">
+                  <b>{it.description || it.products?.name}</b>
+                  {it.long_desc && <div className="text-[12px] text-muted mt-1 leading-relaxed">{it.long_desc}</div>}
+                </td>
                 <td className="td text-right font-mono">{it.qty}</td>
                 <td className="td text-right font-mono text-muted">{fmtAED(it.unit_buy)}</td>
                 <td className="td text-right font-mono">{fmtAED(it.unit_sell)}</td>

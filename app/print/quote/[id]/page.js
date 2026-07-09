@@ -10,7 +10,7 @@ export default async function PrintQuote({ params }) {
   if (!q) return <p className="p-10 text-muted">Quote not found.</p>;
 
   const p = q.partners;
-  const validUntil = new Date(new Date(q.created_at).getTime() + 30 * 864e5);
+  const validUntil = new Date(new Date(q.created_at).getTime() + (q.valid_days || 30) * 864e5);
 
   return (
     <div className="min-h-screen bg-white text-ink">
@@ -70,6 +70,7 @@ export default async function PrintQuote({ params }) {
                 <td className="px-4 py-3 text-[13px]">
                   <b>{it.description || it.products?.name}</b>
                   {it.product_variants?.unit && <span className="text-muted"> — {it.product_variants.unit}</span>}
+                  {it.long_desc && <div className="text-[11.5px] text-muted mt-1 leading-relaxed">{it.long_desc}</div>}
                 </td>
                 <td className="px-4 py-3 text-[13px] text-right font-mono">{it.qty}</td>
                 <td className="px-4 py-3 text-[13px] text-right font-mono">{fmtAED(it.unit_sell)}</td>
@@ -97,9 +98,16 @@ export default async function PrintQuote({ params }) {
           </div>
         </div>
 
+        {q.notes && (
+          <div className="mt-6">
+            <div className="text-[10px] uppercase tracking-[1.5px] text-faint font-semibold">Notes</div>
+            <p className="text-[12px] leading-relaxed mt-1">{q.notes}</p>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="mt-10 pt-5 border-t border-line text-[11px] text-muted leading-relaxed">
-          <b className="text-ink">Terms:</b> Prices exclude VAT and are valid for 30 days from the quotation date.
+          <b className="text-ink">Terms:</b> Prices exclude VAT and are valid for {q.valid_days || 30} days from the quotation date.
           Delivery timelines confirmed on order. Payment terms as agreed with {p?.legal_name}.
           Products supplied and supported by {p?.legal_name}, an authorised Riser Technologies partner.
         </div>

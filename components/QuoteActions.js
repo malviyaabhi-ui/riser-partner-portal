@@ -32,9 +32,7 @@ export default function QuoteActions({ quote, surface }) {
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <a href={`/print/quote/${quote.id}`} target="_blank" className={`${btn} btn-ghost`}>
-        Print / PDF
-      </a>
+      <a href={`/print/quote/${quote.id}`} target="_blank" className={`${btn} btn-ghost`}>Print / PDF</a>
 
       {!isAdmin && <>
         {(s === "draft" || s === "approved") && (
@@ -43,7 +41,11 @@ export default function QuoteActions({ quote, surface }) {
         {s === "sent" && <>
           <button className={`${btn} bg-good text-white`} onClick={() => setStatus("won")}>Mark won</button>
           <button className={`${btn} bg-bad/10 text-bad`} onClick={() => setStatus("lost")}>Mark lost</button>
+          <button className={`${btn} btn-ghost`} onClick={() => setStatus("draft")}>Back to draft</button>
         </>}
+        {(s === "lost" || s === "won") && (
+          <button className={`${btn} btn-ghost`} onClick={() => setStatus("sent")}>Reopen</button>
+        )}
         {s === "draft" && (
           <button className={`${btn} bg-bad/10 text-bad`} onClick={remove}>Delete draft</button>
         )}
@@ -54,10 +56,19 @@ export default function QuoteActions({ quote, surface }) {
           <button className={`${btn} bg-good text-white`} onClick={() => setStatus("approved")}>Approve</button>
           <button className={`${btn} bg-bad/10 text-bad`} onClick={() => setStatus("declined")}>Decline</button>
         </>}
+        {s === "declined" && (
+          <button className={`${btn} bg-good text-white`} onClick={() => setStatus("approved")}>Approve after all</button>
+        )}
+        {(s === "draft" || s === "approved") && (
+          <button className={`${btn} btn-teal`} onClick={() => setStatus("sent")}>Mark as sent</button>
+        )}
         {s === "sent" && <>
           <button className={`${btn} bg-good text-white`} onClick={() => setStatus("won")}>Mark won</button>
           <button className={`${btn} bg-bad/10 text-bad`} onClick={() => setStatus("lost")}>Mark lost</button>
         </>}
+        {(s === "won" || s === "lost") && (
+          <button className={`${btn} btn-ghost`} onClick={() => setStatus("sent")}>Reopen</button>
+        )}
       </>}
     </div>
   );

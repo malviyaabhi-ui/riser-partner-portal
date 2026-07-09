@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSessionContext, fmtAED } from "@/lib/queries";
 import { QUOTE_PILL, QUOTE_LABEL } from "@/lib/quoteStatus";
 import QuoteActions from "@/components/QuoteActions";
+import QuoteStepper from "@/components/QuoteStepper";
 
 export default async function QuoteDetail({ params }) {
   const { supabase } = await getSessionContext();
@@ -26,6 +27,8 @@ export default async function QuoteDetail({ params }) {
         <QuoteActions quote={q} surface="partner" />
       </div>
 
+      <QuoteStepper quote={q} />
+
       <div className="card overflow-hidden mb-4">
         <table className="w-full">
           <thead><tr>
@@ -39,6 +42,7 @@ export default async function QuoteDetail({ params }) {
                 <td className="td">
                   <b>{it.description || it.products?.name}</b>
                   {it.product_variants?.unit && <div className="text-[11.5px] text-faint">{it.product_variants.unit}</div>}
+                  {it.long_desc && <div className="text-[12px] text-muted mt-1 leading-relaxed">{it.long_desc}</div>}
                 </td>
                 <td className="td text-right font-mono">{it.qty}</td>
                 <td className="td text-right font-mono">{fmtAED(it.unit_sell)}</td>
@@ -54,6 +58,12 @@ export default async function QuoteDetail({ params }) {
         </div>
       </div>
 
+      {q.notes && (
+        <div className="card p-4 mb-4">
+          <div className="field-label">Notes on quotation</div>
+          <p className="text-[13px] leading-relaxed">{q.notes}</p>
+        </div>
+      )}
       {q.customer_email && (
         <p className="text-[12.5px] text-muted">Customer email: {q.customer_email}</p>
       )}
