@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { getSessionContext, getVisibleProductsWithPricing, fmtAED } from "@/lib/queries";
+import { cookies } from "next/headers";
+import { getSessionContext, getVisibleProductsWithPricing } from "@/lib/queries";
+import { fmtMoney } from "@/lib/currency";
+import CurrencyToggle from "@/components/CurrencyToggle";
 import DatasheetButton from "@/components/DatasheetButton";
 
 export default async function ProductDetail({ params }) {
@@ -8,6 +11,8 @@ export default async function ProductDetail({ params }) {
   const p = products.find((x) => x.id === params.id);
   if (!p) return <p className="text-muted">Product not found or not available to you.</p>;
   const paused = partner?.status === "pricing_paused";
+  const currency = cookies().get("currency")?.value === "USD" ? "USD" : "AED";
+  const fmtAED = (n) => fmtMoney(n, currency);
 
   return (
     <div className="max-w-3xl">
@@ -22,8 +27,9 @@ export default async function ProductDetail({ params }) {
         <div className="card overflow-hidden my-5">
           <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
             <h2 className="font-display font-bold text-[14px]">Editions &amp; pricing</h2>
-            <span className="text-[11.5px] text-faint">
+            <span className="flex items-center gap-3 text-[11.5px] text-faint">
               Your discount: <b className="text-good font-mono">{p.discount != null && !paused ? `${p.discount}%` : "—"}</b>
+              <CurrencyToggle current={currency} />
             </span>
           </div>
           <table className="w-full">

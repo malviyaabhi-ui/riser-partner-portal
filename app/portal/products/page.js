@@ -1,17 +1,26 @@
-import { getSessionContext, getVisibleProductsWithPricing, fmtAED } from "@/lib/queries";
+import { cookies } from "next/headers";
+import { getSessionContext, getVisibleProductsWithPricing } from "@/lib/queries";
+import { fmtMoney } from "@/lib/currency";
+import CurrencyToggle from "@/components/CurrencyToggle";
 
 export default async function Products() {
   const { supabase, partner } = await getSessionContext();
   const products = await getVisibleProductsWithPricing(supabase, partner);
   const paused = partner?.status === "pricing_paused";
+  const currency = cookies().get("currency")?.value === "USD" ? "USD" : "AED";
+  const fmt = (n) => fmtMoney(n, currency);
 
   return (
     <div>
-      <div className="mb-5">
-        <h1 className="font-display font-bold text-[22px]">Products &amp; Pricing</h1>
-        <p className="text-muted text-[13px] mt-0.5">
-          Your <span className="capitalize">{partner?.tier}</span>-tier buy prices. All prices exclude VAT.
-        </p>
+      <div className="mb-5 flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-display font-bold text-[22px]">Products &amp; Pricing</h1>
+          <p className="text-muted text-[13px] mt-0.5">
+            Your <span className="capitalize">{partner?.tier}</span>-tier buy prices. All prices exclude VAT.
+            {currency === "USD" && " Shown in USD (1 USD = AED 3.679)."}
+          </p>
+        </div>
+        <CurrencyToggle current={currency} />
       </div>
 
       {paused && (
@@ -34,13 +43,13 @@ export default async function Products() {
             <div className="grid grid-cols-3 gap-2 border-t border-line bg-page/60 px-4 py-3">
               <div>
                 <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">MSRP</div>
-                <div className="font-mono text-[12.5px] text-faint line-through mt-1">{fmtAED(p.msrp_aed)}</div>
+                <div className="font-mono text-[12.5px] text-faint line-through mt-1">{fmt(p.msrp_aed)}</div>
               </div>
               <div>
                 <div className="text-[10px] uppercase tracking-wide text-faint font-semibold">Your price</div>
                 <div className="font-mono text-[14px] font-semibold mt-1">
                   {p.fromBuy != null && !paused
-                    ? `${p.variants?.length > 1 ? "from " : ""}${fmtAED(p.fromBuy)}`
+                    ? `${p.variants?.length > 1 ? "from " : ""}${fmt(p.fromBuy)}`
                     : "—"}
                 </div>
               </div>
