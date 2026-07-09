@@ -62,25 +62,25 @@ export default function Sidebar({ surface, partner, profile }) {
   }
 
   return (
-    <aside className={`w-[248px] fixed inset-y-0 left-0 z-10 flex flex-col text-white
-      ${isAdmin ? "bg-gradient-to-b from-navy-2 to-[#050F28] border-r-2 border-champagne" : "bg-gradient-to-b from-navy to-navy-2"}`}>
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/10">
+    <aside className={`w-[232px] fixed inset-y-0 left-0 z-10 flex flex-col bg-white border-r border-line
+      ${isAdmin ? "border-r-2 border-r-champagne" : ""}`}>
+      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-line">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center
           ${isAdmin ? "bg-gradient-to-br from-champagne to-[#8F6F35]" : "bg-gradient-to-br from-teal to-[#3B7BF5]"}`}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isAdmin ? "#091E4D" : "#fff"} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
         </div>
         <div>
-          <div className="font-display font-bold leading-tight">Riser</div>
-          <div className={`text-[9.5px] tracking-[1.6px] uppercase ${isAdmin ? "text-champagne font-semibold" : "text-white/50"}`}>
+          <div className="font-display font-bold leading-tight text-ink">Riser</div>
+          <div className={`text-[9.5px] tracking-[1.6px] uppercase font-semibold ${isAdmin ? "text-[#8F6F35]" : "text-teal-dark"}`}>
             {isAdmin ? "Admin Console" : "Partner Portal"}
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-2 overflow-y-auto">
+      <nav className="flex-1 px-2.5 py-1 overflow-y-auto">
         {groups.map((g) => (
-          <div key={g.label} className="mb-1">
-            <div className="text-[9.5px] tracking-[1.8px] uppercase text-white/35 font-semibold px-2.5 pt-4 pb-1.5">
+          <div key={g.label}>
+            <div className="text-[9.5px] tracking-[1.8px] uppercase text-faint font-semibold px-2 pt-3 pb-1">
               {g.label}
             </div>
             {g.items.map((item) => {
@@ -90,10 +90,10 @@ export default function Sidebar({ surface, partner, profile }) {
                 : pathname.startsWith(item.href);
               return (
                 <Link key={item.href} href={item.href}
-                  className={`flex items-center gap-2.5 rounded-lg px-2 py-[7px] mb-0.5 text-[13px] font-medium transition
-                    ${active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"}`}>
-                  <span className="w-[26px] h-[26px] rounded-[7px] flex items-center justify-center shrink-0"
-                    style={{ background: `${item.color}${active ? "38" : "24"}`, color: item.color }}>
+                  className={`flex items-center gap-2.5 rounded-lg px-2 py-[6px] mb-px text-[13px] font-medium transition
+                    ${active ? "bg-page text-ink" : "text-muted hover:bg-page/70 hover:text-ink"}`}>
+                  <span className="w-[24px] h-[24px] rounded-[7px] flex items-center justify-center shrink-0"
+                    style={{ background: `${item.color}1F`, color: item.color }}>
                     {item.icon}
                   </span>
                   {item.label}
@@ -104,15 +104,15 @@ export default function Sidebar({ surface, partner, profile }) {
         ))}
       </nav>
 
-      <div className="m-3 p-3 rounded-lg bg-white/5 text-[11.5px] text-white/60 leading-relaxed">
-        <b className="text-white">{profile?.full_name || profile?.email}</b><br />
+      <div className="m-2.5 p-3 rounded-lg bg-page text-[11.5px] text-muted leading-relaxed">
+        <b className="text-ink">{profile?.full_name || profile?.email}</b><br />
         {isAdmin ? "Riser Technologies" : partner?.legal_name}
         {!isAdmin && partner && (
           <span className="mt-1 ml-1 inline-block px-2 py-0.5 rounded-full bg-champagne/20 text-champagne text-[10.5px] font-semibold capitalize">
             {partner.tier} partner
           </span>
         )}
-        <button onClick={signOut} className="block mt-2 text-white/45 hover:text-white text-[11.5px] underline">
+        <button onClick={signOut} className="block mt-2 text-faint hover:text-ink text-[11.5px] underline">
           Sign out
         </button>
       </div>

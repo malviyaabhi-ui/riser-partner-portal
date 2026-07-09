@@ -35,7 +35,9 @@ export default async function Quotes() {
           <tbody>
             {(quotes || []).map((q) => (
               <tr key={q.id}>
-                <td className="td font-mono text-[12px] text-faint">{q.quote_no}</td>
+                <td className="td font-mono text-[12px]">
+                  <a href={`/portal/quotes/${q.id}`} className="text-teal-dark font-semibold hover:underline">{q.quote_no}</a>
+                </td>
                 <td className="td">{q.customer_name}</td>
                 <td className="td text-muted">{q.quote_items?.length || 0}</td>
                 <td className="td font-mono">{fmtAED(q.total_sell)}</td>

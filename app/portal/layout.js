@@ -25,7 +25,7 @@ export default async function PortalLayout({ children }) {
   return (
     <div className="flex min-h-screen">
       <Sidebar surface="partner" partner={partner} profile={profile} />
-      <main className="flex-1 ml-[248px] min-w-0">
+      <main className="flex-1 ml-[232px] min-w-0">
         <div className="max-w-[1180px] px-7 py-7">{children}</div>
       </main>
       <Mira />

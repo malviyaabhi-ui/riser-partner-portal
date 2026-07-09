@@ -29,7 +29,9 @@ export default async function AdminQuotes() {
           <tbody>
             {pending.map((q) => (
               <tr key={q.id}>
-                <td className="td font-mono text-[12px] text-faint">{q.quote_no}</td>
+                <td className="td font-mono text-[12px]">
+                  <a href={`/admin/quotes/${q.id}`} className="text-teal-dark font-semibold hover:underline">{q.quote_no}</a>
+                </td>
                 <td className="td">{q.partners?.legal_name}</td>
                 <td className="td">{q.customer_name}</td>
                 <td className="td font-mono">{fmtAED(q.total_sell)}</td>
@@ -51,7 +53,9 @@ export default async function AdminQuotes() {
           <tbody>
             {rest.map((q) => (
               <tr key={q.id}>
-                <td className="td font-mono text-[12px] text-faint">{q.quote_no}</td>
+                <td className="td font-mono text-[12px]">
+                  <a href={`/admin/quotes/${q.id}`} className="text-teal-dark font-semibold hover:underline">{q.quote_no}</a>
+                </td>
                 <td className="td">{q.partners?.legal_name}</td>
                 <td className="td">{q.customer_name}</td>
                 <td className="td font-mono">{fmtAED(q.total_sell)}</td>

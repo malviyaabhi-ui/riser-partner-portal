@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }) {
   return (
     <div className="flex min-h-screen">
       <Sidebar surface="admin" profile={profile} />
-      <main className="flex-1 ml-[248px] min-w-0">
+      <main className="flex-1 ml-[232px] min-w-0">
         <div className="max-w-[1180px] px-7 py-7">{children}</div>
       </main>
       <Mira />
