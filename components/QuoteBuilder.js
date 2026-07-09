@@ -28,6 +28,7 @@ export default function QuoteBuilder({ products, partnerId }) {
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState("");
   const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
   const [notes, setNotes] = useState("");
   const [validDays, setValidDays] = useState(30);
   const [items, setItems] = useState([]);
@@ -61,7 +62,8 @@ export default function QuoteBuilder({ products, partnerId }) {
       status: belowFloor ? "pending_approval" : "draft",
       total_sell: totalSell, total_buy: totalBuy,
       needs_approval: belowFloor, created_by: user.id,
-      notes: notes || null, valid_days: Number(validDays) || 30
+      notes: notes || null, valid_days: Number(validDays) || 30,
+      subject: subject || null
     }).select().single();
     if (error) { setMsg(error.message); setBusy(false); return; }
     const rows = items.map((it) => {
@@ -92,6 +94,11 @@ export default function QuoteBuilder({ products, partnerId }) {
         <div><label className="field-label">Quote valid for (days)</label>
           <input className="input font-mono" type="number" min="1" value={validDays}
             onChange={(e) => setValidDays(e.target.value)} /></div>
+      </div>
+      <div className="mb-4">
+        <label className="field-label">Subject / opportunity (shown on quotation)</label>
+        <input className="input" value={subject} onChange={(e) => setSubject(e.target.value)}
+          placeholder="Nexus panels for boardroom upgrade" />
       </div>
 
       <div className="space-y-3">
